@@ -6,11 +6,11 @@
 
 ;;;; A minimal facility for defining systems of files
 
-(defparameter *aima-root* (truename "~/public_html/code/") ; <<<<<<<< Edit this <<<<<<
+(defparameter *aima-root* (truename "~/git_repos/aima_vacuum/") ; <<<<<<<< Edit this <<<<<<
   "The root directory where the code is stored.")
 
 (defparameter *aima-binary-type*
-  (first (list   ; <<<<<<<<<<<<<<<<<<<< Edit this <<<<<<<<<
+  (first (list "fas"  ; <<<<<<<<<<<<<<<<<<<< Edit this <<<<<<<<<
 	   #+Lispworks system::*binary-file-type*
 	   #+Lucid (first lucid::*load-binary-pathname-types*)
 	   #+Allegro excl:*fasl-default-type*
