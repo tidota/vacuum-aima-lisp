@@ -1,7 +1,8 @@
 # Mods on AIMA-LISP
 
-This is basically from my course work where I modified some code of AIMA-LISP, which is now available from the [author's github page](https://github.com/aimacode/aima-lisp).
-Since the lisp programming part of AIMA is no longer active, I decided to put my (little) work on the lisp code (and also my personal purpose to backup my code). I hope this will help somebody.
+This is my personal practice and modifications to the Lisp code, AIMA-LISP, provided in "Artificial Intelligence: A Modern Approach" by Russell and Norvig, which is available at the [author's github page](https://github.com/aimacode/aima-lisp).
+My modifications were applied to the vacuum robot (in the agents directory).
+Since the lisp programming part of AIMA is no longer active, I put my (trifling) work on the lisp code (and also my personal purpose to backup my code). I hope this will help somebody.
 
 ## SETUP
 It is the same way as the original code is installed and I believe the instruction page is still [alive](http://aima.cs.berkeley.edu/lisp/doc/install.html).
