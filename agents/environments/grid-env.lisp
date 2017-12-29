@@ -59,15 +59,27 @@
   This gets passed an environment which may need to have the objects placed.
   See PARSE-SPECS below in this file for more on initialization."
   (unless (environment-initialized env)
+    ; limit the size
+    (setf (grid-environment-size env) (limsize (grid-environment-size env) 40 40))
     ;; Build the grid and place objects where they belong
-    (setf (grid-environment-grid env) 
+    (setf (grid-environment-grid env)
 	  (make-array (grid-environment-size env) :initial-element '()))
     (parse-specs env (grid-environment-aspec env))
     (parse-specs env (grid-environment-bspec env))
     (parse-specs env (grid-environment-cspec env))
-    (call-next-method)))
+    (call-next-method)
+) )
 
-(defmethod termination? ((env grid-environment)) 
+(defun limsize (size w_lim h_lim)
+  ; size is updated so that it does not exceed 40x40
+  (let ((w (nth 0 size)) (h (nth 1 size)))
+    (if (> w w_lim) (setf w w_lim))
+    (if (> h h_lim) (setf h h_lim))
+    (list w h)
+  )
+)
+
+(defmethod termination? ((env grid-environment))
   "By default, we stop when there are no live agents."
   (every #'(lambda (agent) (not (object-alive? (agent-body agent))))
 	 (environment-agents env)))
@@ -86,7 +98,7 @@
 	(format stream "~A~A" name (heading->string (object-heading object)))
       (format stream "~A" name))))
 
-;;;; Actions 
+;;;; Actions
 
 (defmethod speak ((env grid-environment) agent-body sound)
   "The agent emits a sound."
@@ -105,8 +117,8 @@
 
 (defmethod forward ((env grid-environment) agent-body)
   "Move the object to the location that is one step directly ahead of it."
-  (move-object-to 
-   agent-body 
+  (move-object-to
+   agent-body
    (add-locs (object-loc agent-body) (object-heading agent-body))
    env))
 
@@ -114,7 +126,7 @@
   "Grab an object at the specified location.  Assumes a one-handed agent."
   (declare-ignore args) ;; They are used in other environments
   (let ((object (find-object-if #'grabable? (object-loc agent-body) env)))
-    (when (and object 
+    (when (and object
 	       (not (agent-body-holding agent-body))
 	       (place-in-container object agent-body env))
       (setf (agent-body-holding agent-body) object))))
@@ -132,23 +144,23 @@
 
 ;;;; Initializing Environments
 
-;;; The grammar for the object-specs language is as follows:             
+;;; The grammar for the object-specs language is as follows:
 ;;;<PRE>
 ;;;   specs  =>  (spec...)
 ;;;   spec   =>  (AT where what...) | (* n spec...) | what
 ;;;   where  =>  EDGE | ALL | FREE? | START | (x y) | (AND where...)
 ;;;   what   =>  object | type | (type arg...) | (* n what...)  | (P x what...)
 ;;;   n      =>  integer | (+- integer integer)
-;;; 
+;;;
 ;;; The location FREE? means a randomly chosen free loc, ALL means every loc.
 ;;; If no location is specified, the default is START for agents, FREE?
-;;; otherwise.  
-;;; 
+;;; otherwise.
+;;;
 ;;; Examples of spec:
-;;; 
+;;;
 ;;;  (at edge wall)                  1 wall in every perimeter location
 ;;;  (at free? wumpus)               1 wumpus in some random free location
-;;;  wumpus                          Same as above 
+;;;  wumpus                          Same as above
 ;;;  ask-user-agent                  1 ask-user-agent in the start cell
 ;;;  (* 2 apple)                     An apple in each of 2 random locations
 ;;;  (* 2 (apple :color green))      A green apple in each of 2 random locs
@@ -187,8 +199,17 @@
 			      (parse-whats env (@ x y) whats)))))
    ((eq where 'FREE?)   (parse-whats env (random-loc env :if 'free-loc?) whats))
    ((eq where 'START)   (parse-whats env (grid-environment-start env) whats))
+   ((eq (first where) 'AREA)
+     (let* ((strt (second where))(end (third where))(w (- (xy-x end)(xy-x strt)))(h (- (xy-y end)(xy-y strt))))
+       (for dx = 0 to w do
+         (for dy = 0 to h do
+           (parse-whats env (add-locs strt (list dx dy)) whats)
+         )
+       )
+     )
+   )
    ((xy-p where)        (parse-whats env where whats))
-   ((eq (op where) 'AND)(for each w in (args where) do 
+   ((eq (op where) 'AND)(for each w in (args where) do
 			     (parse-where env w whats)))
    (t (warn "Unrecognized object spec ignored: ~A" `(at ,where ,@whats)))))
 
@@ -212,8 +233,15 @@
 	      (location (or loc (if (agent-p object)
 				    (grid-environment-start env)
 				  (random-loc env :if #'free-loc?)))))
-	 (place-object object location env t)))))
-    
+         (if (not (find-object-if #'obstacle-p location env))
+           (progn
+            (if (obstacle-p object)
+             (setf (grid-contents env location) '()))
+	    (place-object object location env t)
+           )
+         )
+    ))))
+
 (defun parse-n (n)
   (if (eq (op n) '+-)
       (round (+ (arg1 n) (random (float (arg2 n)))
@@ -237,4 +265,3 @@
   "A location is free if there is no obstacle there and it is not the start."
   (and (not (find-object-if #'obstacle-p loc env))
        (not (equal loc (grid-environment-start env)))))
-

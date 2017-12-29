@@ -7,7 +7,6 @@
 
 (defun ask-user (percept)
   "Ask the user what action to take."
-  (format t "~&Percept is ~A; action? " percept)
   (read))
 
 (defmethod print-structure ((agent agent) stream)
@@ -48,4 +47,3 @@
 ;; exactly what we want in an agent program: a closure encapsulates local
 ;; state and behavior, and can access only its arguments and closed-over
 ;; variables.
-

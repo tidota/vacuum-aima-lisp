@@ -62,7 +62,7 @@
     ;; Deliver percept and get action from each agent
     (for each agent in (environment-agents env) do
 	 (setf (agent-percept agent) (get-percept env agent))
-	 (setf (agent-action agent) 
+	 (setf (agent-action agent)
 	       (funcall (agent-program agent) (agent-percept agent))))
     ;; Execute the actions and otherwise update the world
     (update-fn env)
@@ -129,11 +129,11 @@
   ;; You probably won't need to specialize this, unless you want to do
   ;; a fancy graphical user interface
   (let ((stream (environment-stream env)))
-    (when stream 
+    (when stream
       (format stream "~&At Time step ~D:~%" (environment-step env))
       (when (> (environment-step env) 0)
 	(for each agent in (environment-agents env) do
-	     (format stream 
+	     (format stream
 		     "~&Agent ~A perceives ~A~%~6Tand does ~A~%"
 		     agent (agent-percept agent)
 		     (agent-action agent))))
@@ -141,7 +141,7 @@
 
 (defmethod display-environment-snapshot ((env environment))
   "Display a 'picture' of the current state of the environment."
-  ;; This is what you will specialize 
+  ;; This is what you will specialize
   (print env (environment-stream env)))
 
 ;;;; Auxiliary Functions
@@ -161,7 +161,7 @@
   (let ((total 0) (score 0))
     (for i = 1 to n do
 	 (let* ((env (let ((*random-state* env-gen-random-state))
-		       (funcall environment-fn 
+		       (funcall environment-fn
 				:stream nil
 				:aspec (list agent-type)))))
 	   (run-environment env)
@@ -176,14 +176,10 @@
   (for each agent in (environment-agents env) do
        (let ((act (agent-action agent)))
 	 (when (member (op act) (legal-actions env))
+    (format t "act: ~S~%" act)
 	   (apply (op act) env (agent-body agent) (args act))))))
 
 (defmethod print-structure ((env environment) stream)
   (format stream "#<~A; Step: ~D, Agents:~{ ~A~}>"
 	  (type-of env) (environment-step env)
 	  (environment-agents env)))
-
-
-
-
-
