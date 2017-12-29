@@ -115,7 +115,7 @@ X _ _ _ _ _ X U U U
 U X X X X X U U U U
 ```
 "U" represents an unknown cell. "X" represents an obstacle such as wall, furniture, and
-cat. An underscore "_" means a clean cell. When no "_" is contiguous to any "U", it indicates
+cat. An underscore "\_" means a clean cell. When no "\_" is contiguous to any "U", it indicates
 there is no more accessible dirty cell in the environment. Then the function "mapcomplete"
 says T.
 
@@ -126,16 +126,14 @@ either furniture or cat. If the line contains two numbers, it represents the loc
 If the line contains four numbers, it specifies the range of furniture: the first two numbers
 are the bottom-left point, and the latter ones are the top-right point.
 
-
--------------------------------------------------------------------------------
--------------------------------------------------------------------------------
+***
 The following is the original README.md
--------------------------------------------------------------------------------
--------------------------------------------------------------------------------
+***
+
 # aima-lisp
 
 Common Lisp implementation of algorithms from Russell And Norvig's book *Artificial Intelligence - A Modern Approach.*
 
-This repository was the original code base, back in 1995. 
+This repository was the original code base, back in 1995.
 Since then, the Java and Python versions have become more popular, and this Lisp version is no
 longer up-to-date. But it is here for whatever use you want to make of it.
